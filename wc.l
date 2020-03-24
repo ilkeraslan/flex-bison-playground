@@ -1,4 +1,6 @@
 /* Implements wc command in Linux */
+/* Compile using flex <filename>.l */
+/* gcc lex.yy.c -lfl in Linux, gcc lex.yy.c -ll in Mac */
 
 %{
     int characters = 0;
@@ -12,7 +14,8 @@
 .   { characters++; }
 %%
 
-main() {
+int main() {
     yylex();
     printf("Sencence: %8d, Words: %8d, Characters: %8d\n", sentences, words, characters);
+    return 0;
 }
