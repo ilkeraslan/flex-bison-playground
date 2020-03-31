@@ -1,5 +1,5 @@
 /* Implements wc command for a file in Linux */
-/* Compile using flex <filename>.l */
+/* Compile using flex wc_file.l */
 /* gcc lex.yy.c -lfl in Linux, gcc lex.yy.c -ll in Mac */
 /* Execution example -> ./a.out <filename> */
 
@@ -20,5 +20,6 @@ int main(int argc, char *argv[]) {
     yylex();
     printf("Sencence: %8d, Words: %8d, Characters: %8d\n", sentences, words, characters);
     fclose(yyin);
+
     return 0;
 }
