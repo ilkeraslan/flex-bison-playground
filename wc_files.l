@@ -9,6 +9,7 @@
     int sentences = 0;
 %}
 
+%option noyywrap
 %%
 [a-zA-Z]+ { words++; characters += strlen(yytext); }
 \n  { characters++; sentences++; }
@@ -21,6 +22,12 @@ int main(int argc, char *argv[]) {
         yyrestart(yyin);
         yylex();
         printf("Sencence: %8d, Words: %8d, Characters: %8d\n", sentences, words, characters);
+
+        /* Reset variables */
+        characters = 0;
+        words = 0;
+        sentences = 0;
+        
         fclose(yyin);
     }
 
