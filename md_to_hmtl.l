@@ -50,7 +50,7 @@ void print_heading(size_t type) {
     }
     
     // Print the closing tag
-    fprintf(output_file, "</h%zu>", type);
+    fprintf(output_file, "</h%zu>\n", type);
 }
 
 int main(int argc, char *argv[]) {
