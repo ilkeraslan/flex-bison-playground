@@ -13,7 +13,9 @@
         HEADING_4 = 261,
         HEADING_5 = 262,
         HEADING_6 = 263,
-        EOL = 264 /* end of line */
+        EOL = 264 /* end of line */,
+        WORD = 265,
+        SPACE = 266
     };
 
     FILE *output_file; /* Reference for the output file */
@@ -21,13 +23,15 @@
 
 /* Rules */
 %%
-"# " {return HEADING_1;}
-"## " {return HEADING_2;}
-"### " {return HEADING_3;}
-"#### " {return HEADING_4;}
-"##### " {return HEADING_5;}
-"###### " {return HEADING_6;}
+^#[ ] {return HEADING_1;}
+^##[ ] {return HEADING_2;}
+^###[ ] {return HEADING_3;}
+^####[ ] {return HEADING_4;}
+^#####[ ] {return HEADING_5;}
+^######[ ] {return HEADING_6;}
 \n {return EOL;}
+[0-9A-Za-z_,\-\.:/]+ {return WORD;}
+[ ] {return SPACE;}
 %%
 
 /* Code */
@@ -56,25 +60,106 @@ int main(int argc, char *argv[]) {
     while(token = yylex()) {
         switch(token) {
             case HEADING_1 :
-                fprintf(output_file, "<h1></h1>\n");
+                // Print the opening tag
+                fprintf(output_file, "<h1>");
+                
+                // Get the next token, because we know that we are already in h1 tag
+                token = yylex();
+
+                // Until EOL, write in to file
+                while(token != EOL) {
+                    fprintf(output_file, "%s", yytext);
+                    token = yylex();
+                }
+                
+                // Print the closing tag
+                fprintf(output_file, "</h1>");
                 break;
             case HEADING_2 :
-                fprintf(output_file, "<h2></h2>\n");
+                // Print the opening tag
+                fprintf(output_file, "<h2>");
+                
+                // Get the next token, because we know that we are already in h2 tag
+                token = yylex();
+
+                // Until EOL, write in to file
+                while(token != EOL) {
+                    fprintf(output_file, "%s", yytext);
+                    token = yylex();
+                }
+                
+                // Print the closing tag
+                fprintf(output_file, "</h2>");
                 break;
             case HEADING_3 :
-                fprintf(output_file, "<h3></h3>\n");
+                // Print the opening tag
+                fprintf(output_file, "<h3>");
+                
+                // Get the next token, because we know that we are already in h3 tag
+                token = yylex();
+
+                // Until EOL, write in to file
+                while(token != EOL) {
+                    fprintf(output_file, "%s", yytext);
+                    token = yylex();
+                }
+                
+                // Print the closing tag
+                fprintf(output_file, "</h3>");
                 break;
             case HEADING_4 :
-                fprintf(output_file, "<h4></h4>\n");
+                // Print the opening tag
+                fprintf(output_file, "<h4>");
+                
+                // Get the next token, because we know that we are already in h4 tag
+                token = yylex();
+
+                // Until EOL, write in to file
+                while(token != EOL) {
+                    fprintf(output_file, "%s", yytext);
+                    token = yylex();
+                }
+                
+                // Print the closing tag
+                fprintf(output_file, "</h4>");
                 break;
             case HEADING_5 :
-                fprintf(output_file, "<h5></h5>\n");
+                // Print the opening tag
+                fprintf(output_file, "<h5>");
+                
+                // Get the next token, because we know that we are already in h5 tag
+                token = yylex();
+
+                // Until EOL, write in to file
+                while(token != EOL) {
+                    fprintf(output_file, "%s", yytext);
+                    token = yylex();
+                }
+                
+                // Print the closing tag
+                fprintf(output_file, "</h5>");
                 break;
             case HEADING_6 :
-                fprintf(output_file, "<h6></h6>\n");
+                // Print the opening tag
+                fprintf(output_file, "<h6>");
+                
+                // Get the next token, because we know that we are already in h6 tag
+                token = yylex();
+
+                // Until EOL, write in to file
+                while(token != EOL) {
+                    fprintf(output_file, "%s", yytext);
+                    token = yylex();
+                }
+                
+                // Print the closing tag
+                fprintf(output_file, "</h6>");
+                break;
+            case EOL :
+                fprintf(output_file, "\n");
                 break;
             default :
-                printf("%c\n", *yytext);
+                fprintf(output_file, "%s", yytext);
         }
     }
 
