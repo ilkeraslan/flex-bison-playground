@@ -15,7 +15,9 @@
         HEADING_6 = 263,
         EOL = 264 /* end of line */,
         WORD = 265,
-        SPACE = 266
+        SPACE = 266,
+        ITALIC = 267,
+        BOLD = 268
     };
 
     FILE *output_file; /* Reference for the output file */
@@ -29,6 +31,8 @@
 ^####[ ] {return HEADING_4;}
 ^#####[ ] {return HEADING_5;}
 ^######[ ] {return HEADING_6;}
+_.+_ {return ITALIC;}
+\*.+\* {return BOLD;}
 \n {return EOL;}
 [0-9A-Za-z_,\-\.:/]+ {return WORD;}
 [ ] {return SPACE;}
@@ -45,7 +49,14 @@ void print_heading(size_t type) {
 
     // Until EOL, write in to file
     while(token != EOL) {
-        fprintf(output_file, "%s", yytext);
+        if(token == ITALIC) {
+            fprintf(output_file, "<i>%s</i>", yytext);
+        } else if(token == BOLD) {
+            fprintf(output_file, "<b>%s</b>", yytext);
+        } else {
+            fprintf(output_file, "%s", yytext);
+        }
+        
         token = yylex();
     }
     
@@ -99,7 +110,13 @@ int main(int argc, char *argv[]) {
                 fprintf(output_file, "\n");
                 break;
             default :
-                fprintf(output_file, "%s", yytext);
+                if(token == ITALIC) {
+                    fprintf(output_file, "<i>%s</i>", yytext);
+                } else if(token == BOLD) {
+                    fprintf(output_file, "<b>%s</b>", yytext);
+                } else {
+                    fprintf(output_file, "%s", yytext);
+                }
         }
     }
 
