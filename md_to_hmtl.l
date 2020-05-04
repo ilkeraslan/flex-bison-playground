@@ -23,7 +23,8 @@
         ITALIC = 267,
         BOLD = 268,
         BLOCKQUOTE = 269,
-        CODE = 270
+        CODE = 270,
+        TABLE = 271
     };
 
     FILE *output_file; /* Reference for the output file */
@@ -39,19 +40,20 @@
 ^#[ ] {return HEADING_1;}
 [ ] {return SPACE;}
 _[^_]+_ {return ITALIC;}
-\*.+\* {return BOLD;}
+\*[^(\*)]+\* {return BOLD;}
 >[ ](.)+\n {return BLOCKQUOTE;}
 `[^`]+` {return CODE;}
+^\|.+\|$ {return TABLE;}
 \n {return EOL;}
-[0-9A-Za-z\_\,\-.\:\/]+ {return WORD;}
+[0-9A-Za-z\_\,\-\.\:\/]+ {return WORD;}
 %%
 
 void print_heading(size_t type);
-char *trim_backticks(char* input);
+char *trim_special_char(char* input);
 
 int main(int argc, char *argv[]) {
     int token;
-    char* result;
+    char *result;
 
     output_file = fopen("output.html", "w");
 
@@ -100,7 +102,7 @@ int main(int argc, char *argv[]) {
                 fprintf(output_file, "\n");
                 break;
             case ITALIC :
-                result = trim_backticks(yytext);
+                result = trim_special_char(yytext);
                 fprintf(output_file, "<i>%s</i>", result);
                 break;
             case BOLD :
@@ -110,8 +112,11 @@ int main(int argc, char *argv[]) {
                 fprintf(output_file, "<blockquote>%s</blockquote>", yytext);
                 break;
             case CODE :
-                result = trim_backticks(yytext);
+                result = trim_special_char(yytext);
                 fprintf(output_file, "<code>%s</code>", result);
+                break;
+            case TABLE :
+                fprintf(output_file, "<tr>%s</tr>", yytext);
                 break;
             default :
                 fprintf(output_file, "%s", yytext);
@@ -126,6 +131,7 @@ int main(int argc, char *argv[]) {
 
 void print_heading(size_t type) {
     int token;
+    char *result;
 
     // Print the opening tag
     fprintf(output_file, "<h%zu>", type);
@@ -136,13 +142,15 @@ void print_heading(size_t type) {
     // Until EOL, write in to file
     while(token != EOL) {
         if(token == ITALIC) {
-            fprintf(output_file, "<i>%s</i>", yytext);
+            result = trim_special_char(yytext);
+            fprintf(output_file, "<i>%s</i>", result);
         } else if(token == BOLD) {
             fprintf(output_file, "<b>%s</b>", yytext);
         } else if(token == BLOCKQUOTE) {
             fprintf(output_file, "<blockquote>%s</blockquote>", yytext);
         } else if(token == CODE) {
-            fprintf(output_file, "<code>%s</code>", yytext);
+            result = trim_special_char(yytext);
+            fprintf(output_file, "<code>%s</code>", result);
         } else {
             fprintf(output_file, "%s", yytext);
         }
@@ -154,7 +162,7 @@ void print_heading(size_t type) {
     fprintf(output_file, "</h%zu>\n", type);
 }
 
-char *trim_backticks(char* input) {
+char *trim_special_char(char* input) {
     char string[100] = {};
     char *tmp = string;
 
