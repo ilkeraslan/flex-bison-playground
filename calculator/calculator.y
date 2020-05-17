@@ -5,6 +5,7 @@
 %token NUMBER
 %token ADD SUB MUL DIV ABS
 %token EOL
+%token OPENING_PARANTHESIS CLOSING_PARANTHESIS
 
 %% /* Rules in simplified BNF */
 
@@ -24,14 +25,17 @@ factor: term
 
 term: NUMBER
   | ABS term { $$ = $2 >= 0 ? $2 : - $2; }
+  | OPENING_PARANTHESIS exp CLOSING_PARANTHESIS { $$ = $2; }
   ;
 
 %%
 
-main(int argc, char **argv) {
+int main(int argc, char **argv) {
     yyparse();
+    return 0;
 }
 
-yyerror(char *s) {
+int yyerror(char *s) {
     fprintf(stderr, "error: %s\n", s);
+    return -1;
 }
