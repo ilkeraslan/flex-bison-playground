@@ -93,7 +93,7 @@ int main(int argc, char *argv[]) {
             fclose(file);
         }
 
-        /* TODO */
+        /* Alphabetize the symbol table and print the references */
         printrefs();
     }
 
