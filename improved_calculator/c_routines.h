@@ -63,8 +63,27 @@ double evaluate(struct abstract_syntax_tree *tree) {
     return subtree_value;
 }
 
-void free_tree(struct abstract_syntax_tree *) {
-    // TODO
+void free_tree(struct abstract_syntax_tree *tree) {
+    switch(tree->nodetype) {
+        /* in case of 2 subtrees */
+        case '+':
+        case '-':
+        case '*':
+        case '/':
+            free_tree(tree->right);
+
+        /* in case of 1 subtree */
+        case '|':
+        case 'M':
+            free_tree(tree->left);
+
+        /* in case of 0 subtree */
+        case 'K':
+            free(tree);
+            break;
+
+        default: printf("internal error occured: free bad node %c\n", tree->nodetype);
+    }
 }
 
 void yyerror(char *s, ...) {
