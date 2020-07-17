@@ -36,8 +36,31 @@ struct abstract_syntax_tree *new_number_value(double value) {
     return (struct abstract_syntax_tree *)val;
 }
 
-double evaluate(struct abstract_syntax_tree *) {
-    // TODO
+double evaluate(struct abstract_syntax_tree *tree) {
+    double subtree_value;
+
+    switch(tree->nodetype) {
+        case 'K': subtree_value = ((struct number_value *)tree)->number;
+            break;
+        case '+': subtree_value = evaluate(tree->left) + evaluate(tree->right);
+            break;
+        case '-': subtree_value = evaluate(tree->left) - evaluate(tree->right);
+            break;
+        case '*': subtree_value = evaluate(tree->left) * evaluate(tree->right);
+            break;
+        case '/': subtree_value = evaluate(tree->left) / evaluate(tree->right);
+            break;
+        case '|': subtree_value = evaluate(tree->left);
+            if(subtree_value < 0) {
+                subtree_value = -subtree_value;
+            }
+            break;
+        case 'M': subtree_value = -evaluate(tree->left);
+            break;
+        default: printf("an internal error occured: bad node %c\n", tree->nodetype);
+    }
+
+    return subtree_value;
 }
 
 void free_tree(struct abstract_syntax_tree *) {
